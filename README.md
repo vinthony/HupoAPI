@@ -44,4 +44,25 @@ HupoAPI
 			* supportNum
 			* replyContent
 			* time
+	+ private getItemVoice($type) 获取新声内容
+		- @param $type  同getItemNews的type
+		- @return (array)
+			* news /*array*/ 同 getNewsInfoAndImg 的返回值
+			* gallery /*array*/ 同 getNewsGallery 的返回值
 	+ public getBBSItem($type) 				
+		//todo
+	+ private getNewsInfoAndImg($list) 获取新声的主页内容
+		- @param $list 取到新声首页数据
+		- @return (array)
+			* title
+			* content
+			* photo
+			* commentNum
+			* admireNum
+	+ private getNewsGallery($gallery) 获取新声主页的gallery
+		- @param gallery 获取新声首页gallery
+		- @return (array)
+			* img
+			* title
+			* text
+					
