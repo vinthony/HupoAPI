@@ -28,5 +28,32 @@
 			}
 			return $arr;
 		}
+		public static function getNewsPage($url){
+			$html=file_get_html($url);
+			$arr=array(
+				"title"=>$html->find(".artical-title .headline",0)->innertext,
+				"article"=>$html->find(".artical-main-content",0)->innertext,
+				"img"=>$html->find(".artical-importantPic img",0)->src,
+				"comment"=>HupoAPI::getComment($html->find(".comment-list dl")),
+				"supportNum"=>$html->find(".fn-fl .J_supportNum")->innertext
+				);		
+		}
+		public static function getBBSItem($type){
+			$html=file_get_html("http://bbs.hupu.com/".$type);
+
+		}
+		private static function getComment($commentList){
+			$arr=array();
+			foreach ($commentList as $element) {
+				$a=array(
+					"userImg"=>$element->find(".userAvatar img")->src,
+					"userLink"=>$element->find(".userAvatar  a")->href,
+					"userName"=>$element->find(".userInfo-hd a")->innertext,
+					"supportNum"=>$element->find(".userInfo-hd .fraction .fraction-num")->innertext,
+					"replyContent"=>$element->find(".comm-bd .J_reply_content")->innertext,
+					"time"=>$element->find(".comm-bt .time")->innertext
+					);
+			}
+		}
 	}
 ?>
