@@ -15,7 +15,7 @@ class CurlUtil{
 	private $_followlocation;
 	private $_timeOut;
 	private $_maxRedirects;
-	private $_cookieFileLocation = './cookie.txt'; 
+	private $_cookieFileLocation = "/cookie.txt"; 
 	private $_post;
 	private $_noBody;
 	private $_session;
@@ -23,7 +23,7 @@ class CurlUtil{
 	private $_binaryTransfer;
 	private $_webPage;
 	private $_status;
-	private $_referer="http://www.google.com";
+	private $_referer="http://www.hupu.com";
 	public $authentication = 0;
 	public $auth_name	   = '';
 	public $auth_pwd       = '';
@@ -54,7 +54,7 @@ class CurlUtil{
 		$this->_noBody = $arr['noBody'];
 		$this->_includeHeader = $arr['includeHeader'];
 		$this->_binaryTransfer = $arr['binaryTrans'];
-		//$this->$_cookieFileLocation ='./cookie/cookie.txt';
+		$this->_cookieFileLocation = dirname(__FILE__)."/cookie.txt";
 	}
 
 	function __destruct(){
