@@ -1,5 +1,12 @@
 HupoAPI
 =======
+How to use:
+---
+	require_once("simple_html_dom.php");
+	require_once("API.php");
+	echo HupoAPI::getNewsPage("http://voice.hupu.com/china/1652736.html");
+	//就能获得单个界面数据
+	
 ####simple_html_dom.php :DOM相关操作
 ####Curl.class.php ： 存放相关curl处理的类
     + public useAuth 用户授权信息
