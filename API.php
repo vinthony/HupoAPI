@@ -8,14 +8,17 @@
 
 		public static function getIndexPageNews(){
 			$html=file_get_html('http://www.hupu.com/');
+			
 			return $html->find('.focusNews dl a');
 		}
 		public static function getItemNews($type,$page){
 			$html=file_get_html("http://voice.hupu.com/".$type."/newslist/".$page.".html");
+			
 			return $html->find('.news-list li');
 		}
 		public static function getItemVoice($type){
 			$html=file_get_html("http://voice.hupu.com/".$type);
+			
 			$list=$html->find(".hot-list .voice-card-list");
 			$galleryDiv=$html->find(".focusImg .bd-bigPic li");
 			$arr=array(
@@ -42,6 +45,7 @@
 		}
 		public static function getNewsPage($url){
 			$html=file_get_html($url);
+			
 			$arr=array(
 				"title"=>$html->find(".artical-title .headline",0)->innertext,
 				"article"=>$html->find(".artical-main-content",0)->innertext,
@@ -50,9 +54,46 @@
 				"supportNum"=>$html->find(".fn-fl .J_supportNum",0)->innertext
 				);		
 		}
-		public static function getBBSItem($type){
-			$html=file_get_html("http://bbs.hupu.com/".$type);
-
+		public static function getBBSItem($type,$item='zt'){
+			/**
+			* $item : 主题$type, 精华 $type."-digest", 亮了"/highlight", 视频"/video" 
+			**/
+			$url="http://bbs.hupu.com/".$type;
+			switch ($type) {
+				case 'jh':
+					$url=$url."-digest";
+					break;
+				case 'll':
+					$url=$url."/highlight";
+					break;
+				case 'sp':
+					$url=$url."/video";
+					break;
+				case 'zt':
+				default:
+					$html=file_get_html($url);
+					$return=HupoAPI::getBBSzt($html->find('#content tr[mid]'));
+					break;
+			}
+			return $return;
+			
+		}
+		private static function getBBSzt($trs){
+			$url="http://bbs.hupu.com";
+			$arr=array();
+			foreach ($trs as $tr) {
+				$a=array(
+					"title"=>$tr->find(".p_title",0)->plaintext,
+					"href"=>$url.$tr->find(".p_title a",0)->href,
+					"author"=>$tr->find(".p_author a",0)->innertext,
+					"authorLink"=>$tr->find(".p_author a",0)->href,
+					"authorAndTime"=>$tr->find(".p_author a",0)->plaintext,
+					"replyAndScan"=>$tr->find(".p_re",0)->innertext,
+					"lastReTime"=>$tr->find(".p_retime a",0)->innertext
+					);
+				array_push($arr, $a);
+			}
+			return $arr;
 		}
 		private static function getComment($commentList){
 			$arr=array();
