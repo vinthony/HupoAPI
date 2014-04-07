@@ -66,7 +66,11 @@ class CurlUtil{
 
      public function setCookieFileLocation($path) 
      { 
-         $this->_cookieFileLocation = $path; 
+     	 $fp=fopen("./".$path.".txt","w+");
+     	 chmod("./".$path.".txt", 0777);
+     	 if(!is_writable("./".$path.".txt"))
+     	 	die("file not is_writable");
+         $this->_cookieFileLocation = "./".$path.".txt"; 
      } 
 
      public function setPost($postFields) 

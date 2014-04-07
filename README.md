@@ -1,5 +1,14 @@
 HupoAPI
 =======
+todo:
+-----
+	1.登录->服务器端存储 用户名文件
+	2.获取登陆后数据->调用cookie
+	3.回帖
+	4.引用获取不到url（替代方案？）
+	5.亮了功能实现
+	6.other
+	
 How to use:
 ---
 	require_once("simple_html_dom.php");
@@ -8,6 +17,7 @@ How to use:
 	//就能获得单个界面数据
 	
 ####simple_html_dom.php :DOM相关操作
+[点击这里查看](http://www.ecartchina.com/php-simple-html-dom/manual.htm#section_quickstart)
 ####Curl.class.php ： 存放相关curl处理的类
     + public useAuth 用户授权信息
     + public setName 设置用户名
@@ -57,7 +67,14 @@ How to use:
 		- @param $items=["zt","jh","hl","sp"]/分别对应 主题，精华，亮了，视频
 		- @param $page /* int */ 页数
 		- @return /*array*/
-			(getBBSzt,getBBShl,getBBSsp)返回值其中之一		
+			(getBBSzt,getBBShl,getBBSsp)返回值其中之一	+ public getBBSpage($url) 获得帖子详细界面
+		- @param $url 帖子链接
+		- @return (array)
+			* title
+			* bbsInfo
+			* main /*array*/ see return getBBSFloor
+			* highlight /*array*/ see return getBBSFloor
+			* floors /*array*/ see return getReFloor
 	+ private getComment($commentList) 获得新闻评论列表信息
 		- @param $commentList
 		- @return (array)
@@ -116,6 +133,9 @@ How to use:
 			* title 				
 			* time
 	- getImgs($imgs) //imgs标签
-		- $param $imgs
-		- $return (array)
+		- @param $imgs
+		- @return (array)
 			* src 		
+	- getLinks($links) //a 标签
+		- @param $links
+		- @return 		

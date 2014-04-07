@@ -89,27 +89,54 @@
 			$arr=array(
 				"title"=>$html->find(".bbs-hd-h1 h1",0)->innertext,
 				"bbsInfo"=>$html->find(".bbs-hd-h1 .browse",0)->innertext,
-				"main"=>HupoAPI::getBBSFloor($html->find("#t_main div[id=tpc]")),
-				"floors"=>HupoAPI::getBBSFloor($html->find("#t_main .floor[id!=tpc]"))
+				"main"=>HupoAPI::getBBSFloor($html->find("#t_main div[id=tpc]"),$url),
+				"highlight"=>HupoAPI::getBBSFloor($html->find("#readfloor .floor"),$url),
+				"floors"=>HupoAPI::getReFloor($html->find("#t_main  .floor"),$url)
 				);
 			return $arr;
 		}
-		private static function getBBSFloor($floors){
-			$url="http://bbs.hupu.com";
+		private static function getReFloor($floors){
 			$arr=array();
-			foreach ($floors as $floor ) {
+			foreach ($floors as $floor) {
+				if($floor->id=='tpc' || $floor->parent()->id=='readfloor') continue;
+				$authorLink=$floor->find(".user a",0)->href;
+				$author_id=end(explode("/",$authorLink));
 				$a=array(
 					"authorIMG"=>$floor->find(".user .headpic img",0)->src,
-					"authorLink"=>$floor->find(".user a",0)->href,
+					"authorLink"=>$authorLink,
 					"authorName"=>$floor->find(".floor_box .author .left a",0)->innertext,
-					"noFollowLink"=>$url.$floor->find(".floor_box .author .right a",0)->href,
-					"replyLink"=>$floor->find(".floor_box .author .right .reply",0)->href,
+					"noFollowLink"=>$urlBase."/".$id."_".$author_id.".html",
+					"replyLink"=>$floor->find(".floor_box a[pid]",0)->innertext,
+					"time"=>$floor->find(".floor_box .left .stime",0)->innertext,
+					"admireNum"=>$floor->find(".floor_box .f444 .stime",0)->innertext,
+					"contentText"=>$floor->find(".floor_box table td",0)->plaintext,
+					"contentImg"=>HupoAPI::getImgs($floor->find(".floor_box table td img")),
+					"contentLink"=>HupoAPI::getLinks($floor->find(".floor_box table td a[href]"))
+					);
+				array_push($arr,$a);
+			}
+			return $arr;
+		}
+		private static function getBBSFloor($floors,$url){
+			$urlBase="http://bbs.hupu.com";
+			$url=explode("/", $url);
+			$id=preg_replace("/.html/","", end($url));
+			$arr=array();
+			foreach ($floors as $floor ) {
+				$authorLink=$floor->find(".user a",0)->href;
+				$author_id=end(explode("/",$authorLink));
+				$a=array(
+					"authorIMG"=>$floor->find(".user .headpic img",0)->src,
+					"authorLink"=>$authorLink,
+					"authorName"=>$floor->find(".floor_box .author .left a",0)->innertext,
+					"noFollowLink"=>$urlBase."/".$id."_".$author_id.".html",
+					"replyLink"=>$floor->find(".floor_box a[pid]",0)->innertext,
 					"addFavor"=>$floor->find(".floor_box .author .right a",0)->href,
 					"time"=>$floor->find(".floor_box .left .stime",0)->innertext,
 					"admireNum"=>$floor->find(".floor_box .f444 .stime",0)->innertext,
 					"contentText"=>$floor->find(".floor_box table td",0)->plaintext,
 					"contentImg"=>HupoAPI::getImgs($floor->find(".floor_box table td img")),
-					"contentLink"=>HupoAPI::getLinks($floor->find(".floor_box table td a"))
+					"contentLink"=>HupoAPI::getLinks($floor->find(".floor_box table td a[href]"))
 					);
 				array_push($arr,$a);
 			}
