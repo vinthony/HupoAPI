@@ -1,5 +1,6 @@
 <?php
 	require_once 'simple_html_dom.php';
+	require_once 'Curl.class.php';
 	/**
 	* API
 	* 
@@ -196,6 +197,51 @@
 				array_push($arr, $a);
 			}
 			return $arr;
+		}
+		public static function login($username,$password){
+			$option=array(
+				"url"=>"http://passport.hupu.com/login?from=myIndex",
+				"folocation"=>true,
+				"timeOut"=>4,
+				"maxRed"=>4,
+				"noBody"=>false,
+				"includeHeader"=>false,
+				"binaryTrans"=>false
+				);
+			$postData=array(
+				"username"=>$username,
+				"password"=>$password,
+				"rememberme"=>1
+				);
+			$curl = new CurlUtil($option);
+			$curl->setPost($postData);
+			date_default_timezone_set("PRC");
+			$sign=intval((time()+mt_rand())/2);
+			$curl->setCookieFileLocation($sign);
+			$curl->createCURL();
+			if($curl->getHttpStatus()<400){
+				if(filesize($curl->getCookieFile())< 500){
+					return 3;//登录失败
+				}else{
+					return $sign;
+				}
+			}else{
+				return 4;//服务器无响应
+			}
+
+		}
+		public static function getLogedHtml($sign,$url){
+			$cookie_file="./".$sign.".txt";
+			$ch=curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_COOKIEFILE,$cookie_file);
+			$page=curl_exec($ch);
+			curl_close($ch);
+			$html = new simple_html_dom();
+			$html->load($page);
+			return $html;
 		}
 		private static function getBBSzt($trs){
 			$url="http://bbs.hupu.com";

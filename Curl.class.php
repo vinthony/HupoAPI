@@ -120,5 +120,8 @@ class CurlUtil{
 	public function getPage(){
 		return $this->_webPage;
 	}	
+	public function getCookieFile(){
+		return $this->_cookieFileLocation;
+	}
 }
 ?>
