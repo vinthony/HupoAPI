@@ -9,7 +9,6 @@
 
 		public static function getIndexPageNews(){
 			$html=file_get_html('http://www.hupu.com/');
-			
 			return $html->find('.focusNews dl a');
 		}
 		public static function getItemNews($type,$page){
@@ -96,6 +95,116 @@
 				);
 			return $arr;
 		}
+		public static function getMyBBSArray($sign){
+			$url="http://bbs.hupu.com";
+			$html=HupoAPI::getLogedHtml($sign,$url);
+			$elements=$html->find("ul[id=myforums_list] li");
+			$return=array();
+			foreach ($elements as $element) {
+				$return[]=$element->find('a',0)->innertext;
+			}
+			array_shift($return);
+			return $return;
+		}
+		public static function getMyBBSBox($sign,$type,$group){
+
+		}
+		public static function getMyMessage($sign,$id,$type='index',$page='1',$kind){
+			$simple="http://my.hupu.com";
+			if(is_null($id))
+				$url=$simple.HupoAPI::getID($sign,$simple,null,"my");
+			switch ($type) {
+				case 'index'://todo
+					$html=HupoAPI::getLogedHtml($sign,$url);
+					break;
+				case 'dt'://todo
+					$html=HupoAPI::getLogedHtml($sign,$url."/playbyplay");
+					break;
+				case 'blog'://delay
+					$html=HupoAPI::getLogedHtml($sign,$url."/blog");
+					break;
+				case 'photo'://delay
+					$html=HupoAPI::getLogedHtml($sign,$url."/photo");
+					break;
+				case 'note'://todo
+					$html=HupoAPI::getLogedHtml($sign,$url."/note");
+					break;		
+				case 'topic':
+					$html=HupoAPI::getLogedHtml($sign,$url."/topic");
+					$return=HupoAPI::getTopic($html);
+					break;	
+				case 'topic-re'://todo
+					$html=HupoAPI::getLogedHtml($sign,$url."/topic-allreply-1");
+					break;	
+				case 'topic-fav':
+					$html=HupoAPI::getLogedHtml($sign,$url."/topic-fav-1");
+					$return=HupoAPI::getTopic($html);
+					break;	
+				case 'video'://delay
+					$html=HupoAPI::getLogedHtml($sign,$url."/video");
+					break;		
+				case 'video-fav'://delay
+					$html=HupoAPI::getLogedHtml($sign,$url."/video?mode=fav&type=".$kind);
+					break;	
+				case 'board'://add img ,reply
+					$html=HupoAPI::getLogedHtml($sign,$url."/board");
+					$return=HupoAPI::getBoard($html);
+					break;	
+				case 'profile'://todo
+					$html=HupoAPI::getLogedHtml($sign,$url."/profile");
+					break;		
+				default:
+					# code...
+					break;
+			}
+			return $return;
+
+		}
+		private static function getID($sign,$url,$username,$type='my'){
+				switch ($type) {
+					case 'my':
+						$html=HupoAPI::getLogedHtml($sign,$url);
+						$url=$html->find(".headpic",0)->href;
+						preg_replace("/\D/", "", $url);
+						break;
+					default:
+						# code...
+						break;
+				}
+				return $url;
+		}
+		private static function getBoard($html){
+			$arr=array();
+			$elements=$html->find(".guestbook .clearleft");
+			foreach ($elements as $element) {
+				$a=array(
+					"userImg"=>$element->find(".guestbook_left img",0)->src,
+					"userLink"=>$element->find(".guestbook_left a",0)->href,
+					"userName"=>$element->find(".guestbook_left a",0)->alt,
+					"time"=>$element->find(".guestbook_right em",0)->plaintext,
+					"comment"=>$element->find(".guestbook_right p",0)->plaintext
+					);
+				array_push($arr, $a);
+			}
+			return $arr;
+		}
+		private static function getTopic($html){
+			$arr=array();
+			$elements=$html->find('.mytopic tr');
+			foreach ($elements as $element) {
+				$a=array(
+					"title"=>$element->find('.p_title',0)->plaintext,
+					"link"=>$element->find(".p_title a",0)->href,
+					"bbs"=>$element->find('.blue',0)->innertext,
+					"bbsLink"=>$element->find(".blue",0)->href,
+					"time"=>$element->find("td",2)->plaintext,
+					"info"=>$element->find("td",3)->plaintext
+					);
+				array_push($arr, $a);
+			}
+			array_shift($arr);
+			return $arr;
+		}
 		private static function getReFloor($floors){
 			$arr=array();
 			foreach ($floors as $floor) {
@@ -118,6 +227,7 @@
 			}
 			return $arr;
 		}
+
 		private static function getBBSFloor($floors,$url){
 			$urlBase="http://bbs.hupu.com";
 			$url=explode("/", $url);

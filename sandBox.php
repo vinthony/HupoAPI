@@ -3,12 +3,13 @@
 require_once 'API.php';
 require_once 'Curl.class.php';
 require_once 'simple_html_dom.php';
-echo "<meta charset='gb2312'>";
+echo "<meta charset='utf-8'>";
 $item=$_GET['item'];
 $type=$_GET['type'];
 $bbsType=$_GET['bbstype'];
 $uname=$_GET['uname'];
 $pwd=$_GET['pwd'];
+$url=$_GET['url'];
 
 if($item=="voice"){
 	echo json_encode(HupoAPI::getItemVoice($type));
@@ -17,15 +18,20 @@ if($item=="bbs"){
 	echo print_r(HupoAPI::getBBSItem($type,'hl'));
 }
 if($item=="page"){
-	echo print_r(HupoAPI::getBBSPage("http://bbs.hupu.com/9222995.html"));
+	echo print_r(HupoAPI::getBBSPage($url));
 }
 if($item=="login"){
 	echo HupoAPI::login($uname,$pwd);
 }
 if($item=="loged"){
-	echo HupoAPI::getLogedHtml(943212499,"http://bbs.hupu.com")->find("ul[id=myforums_list] li a ",5)->innertext;
+	print_r(HupoAPI::getMyBBSArray(972823920));
 }
-
+if($item=="mypage"){
+	print_r(HupoAPI::getMyBBSBox(972823920));
+}
+if($item=="test"){
+    print_r(HupoAPI::getMyMessage(972823920,null,'board',null,null));
+}
 /*
 $option=array(
 	"url"=>"http://passport.hupu.com/login?from=myIndex",
